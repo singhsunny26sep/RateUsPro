@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, Image, Animated } from 'react-native';
-import { Container } from '../../components/Container/Container';
-import { COLORS } from '../../theme';
-import { moderateScale, scale } from '../../utils/Scalling';
+import React, {useEffect, useRef} from 'react';
+import {StyleSheet, View, Text, Image, Animated} from 'react-native';
+import {Container} from '../../components/Container/Container';
+import {COLORS} from '../../theme';
+import {moderateScale, scale} from '../../utils/Scalling';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // import AsyncStorage
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen({navigation}) {
   const imageAnim = useRef(new Animated.Value(-200)).current;
   const textAnim = useRef(new Animated.Value(200)).current;
 
@@ -16,13 +16,13 @@ export default function SplashScreen({ navigation }) {
           const userToken = await AsyncStorage.getItem('userToken');
           console.log('token:', userToken);
           if (userToken) {
-            navigation.replace('ReviewsPage'); 
+            navigation.replace('showReview');
           } else {
-            navigation.replace('Login'); 
+            navigation.replace('Login');
           }
         } catch (error) {
           console.error('Error checking auth status:', error);
-          navigation.replace('Login'); 
+          navigation.replace('Login');
         }
       };
       Animated.parallel([
@@ -39,7 +39,7 @@ export default function SplashScreen({ navigation }) {
       ]).start();
 
       checkUserAuth();
-    }, 1000); 
+    }, 1000);
     // Cleanup function to clear the timeout when the component unmounts
     return () => clearTimeout(timer);
   }, [imageAnim, textAnim, navigation]);
@@ -48,12 +48,10 @@ export default function SplashScreen({ navigation }) {
     <Container
       statusBarStyle="dark-content"
       statusBarBackgroundColor={COLORS.white}
-      backgroundColor={COLORS.white}
-    >
+      backgroundColor={COLORS.white}>
       <View style={styles.imageContainer}>
         <Animated.View
-          style={[styles.imageWrapper, { transform: [{ translateY: imageAnim }] }]}
-        >
+          style={[styles.imageWrapper, {transform: [{translateY: imageAnim}]}]}>
           <Image
             source={{
               uri: 'https://cdni.iconscout.com/illustration/premium/thumb/people-giving-online-rating-illustration-download-in-svg-png-gif-file-formats--customer-feedback-star-pack-business-illustrations-4642814.png',
@@ -62,8 +60,7 @@ export default function SplashScreen({ navigation }) {
           />
         </Animated.View>
         <Animated.Text
-          style={[styles.ratingText, { transform: [{ translateY: textAnim }] }]}
-        >
+          style={[styles.ratingText, {transform: [{translateY: textAnim}]}]}>
           RateUs Pro
         </Animated.Text>
       </View>

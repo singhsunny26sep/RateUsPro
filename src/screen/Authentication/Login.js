@@ -39,7 +39,7 @@ export default function Login({navigation}) {
     if (!password) {
       setPasswordError('Password is required');
       valid = false;
-    } else if (password.length < 6) {
+    } else if (password.length < 5) {
       setPasswordError('Password must be at least 6 characters');
       valid = false;
     } else {
@@ -61,7 +61,7 @@ export default function Login({navigation}) {
         await AsyncStorage.setItem('userToken', response.data.token);
         console.log('Token saved:', response.data.token);
         Alert.alert('Success', response.data.msg);
-        navigation.navigate('ReviewsPage');
+        navigation.navigate('showReview');
       } else {
         Alert.alert('Error', 'Login failed');
       }

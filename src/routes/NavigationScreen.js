@@ -13,6 +13,8 @@ import One_to_ThreeStarPage from '../screen/QR_Code/One_to_ThreeStarPage';
 import Four_to_FiveStarPage from '../screen/QR_Code/Four_to_FiveStarPage';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import ReviewsPage from '../screen/ReviewsPage';
+import ShowReview from '../screen/Welcome/ShowReview';
+import SubscriptionScreen from '../screen/Subscription/subscription';
 
 const Stack = createNativeStackNavigator();
 export default function NavigationScreen() {
@@ -32,6 +34,8 @@ export default function NavigationScreen() {
         <Stack.Screen name="New_Password" component={New_Password} />
         <Stack.Screen name="ReviewForm" component={ReviewForm} />
         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
+        <Stack.Screen name="showReview" component={ShowReview} />
+        <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
         <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} />
         <Stack.Screen name="One_to_ThreeStarPage" component={One_to_ThreeStarPage} />
         <Stack.Screen name="Four_to_FiveStarPage" component={Four_to_FiveStarPage} />

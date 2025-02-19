@@ -1,7 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
 
 export default function CameraScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(false);

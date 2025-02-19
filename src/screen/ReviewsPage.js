@@ -19,8 +19,7 @@ import {useNavigation} from '@react-navigation/core';
 import {Instance} from '../api/Instance';
 
 export default function ReviewsPage() {
-  const navigation = useNavigation();
-
+  const navigation = useNavigation()
   // State Variables
   const [profileData, setProfileData] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
