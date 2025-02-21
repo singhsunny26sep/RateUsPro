@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Text,
   View,
@@ -8,63 +8,60 @@ import {
   Modal,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Container } from '../../components/Container/Container';
-import { COLORS } from '../../theme';
-import { AppBar } from '../../components/AppBar/AppBar';
-import { Instance } from '../../api/Instance';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {Container} from '../../components/Container/Container';
+import {COLORS} from '../../theme';
+import {AppBar} from '../../components/AppBar/AppBar';
+import {Instance} from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Share from 'react-native-share';
+import {captureRef} from 'react-native-view-shot';
+import RNPrint from 'react-native-print';
 
 const GenerateMyQRCode = () => {
   const [profileData, setProfileData] = useState(null);
   const [isApproved, setIsApproved] = useState(false); // Track approval status
   const [showModal, setShowModal] = useState(false); // Show purchase popup
+  const [data, setData] = useState(null);
   const qrRef = useRef();
   const navigation = useNavigation();
 
   // Fetch Profile Data
-// Fetch Profile Data
-const fetchProfile = async () => {
-  try {
-    const token = await AsyncStorage.getItem('userToken');
-    if (!token) {
-      console.error('Token is missing');
-      return;
+  const fetchProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        console.error('Token is missing');
+        return;
+      }
+
+      const response = await Instance.get('/v1/api/users/profile', {
+        headers: {Authorization: `Bearer ${token}`},
+      });
+
+      const userData = response.data.result;
+      setProfileData(userData._id);
+      setData(userData);
+      console.log(userData, 'Full Profile Data'); // Debugging Log
+
+      if (userData.isSubscribed === true) {
+        setIsApproved(true);
+        setShowModal(false);
+      } else {
+        setIsApproved(false);
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
-
-    const response = await Instance.get('/v1/api/users/profile', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const userData = response.data.result;
-    setProfileData(userData._id);
-    
-    console.log(userData, 'Full Profile Data'); // Debugging Log
-
-    // Check if isApproved is true
-    if (userData.isApproved === true) {
-      setIsApproved(true);
-      setShowModal(false);
-    } else {
-      setIsApproved(false);
-      setShowModal(true);
-    }
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchProfile();
-
-    // Poll API every 5 seconds to check approval status
     const interval = setInterval(fetchProfile, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Share QR Code Function
   const shareQRCode = async () => {
     try {
       const qrURL = `https://rating-tau-nine.vercel.app/screens/ReviewForm?scanned=${profileData}`;
@@ -79,19 +76,38 @@ const fetchProfile = async () => {
     }
   };
 
-  // Navigate to Subscription Page
+  const printQRCode = async () => {
+    try {
+      const uri = await captureRef(qrRef, {
+        format: 'png',
+        quality: 1,
+      });
+  
+      // Save the QR Code to the device (optional)
+      const shareOptions = {
+        title: 'Download QR Code',
+        url: uri,
+        saveToFiles: true, // This will allow the user to save the file
+      };
+      await Share.open(shareOptions);
+  
+      // Print the QR Code
+      await RNPrint.print({filePath: uri});
+    } catch (error) {
+      console.error('Print Error:', error);
+    }
+  };
+  
+
   const goToSubscription = () => {
-    setShowModal(false); // Close modal
+    setShowModal(false);
     navigation.navigate('SubscriptionScreen');
   };
   useFocusEffect(
     React.useCallback(() => {
-      setShowModal(false); 
-    }, [])
+      setShowModal(false);
+    }, []),
   );
-  
-
-  // Logout Function
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
@@ -100,7 +116,6 @@ const fetchProfile = async () => {
       console.error('Logout Error:', error);
     }
   };
-
   return (
     <Container
       statusBarStyle="dark-content"
@@ -113,7 +128,22 @@ const fetchProfile = async () => {
         onRightIconPress={handleLogout}
       />
       <ScrollView contentContainerStyle={styles.container}>
-       {isApproved ? (
+        {data ? (
+          <>
+            <Text
+              style={{
+                color: COLORS.black,
+                fontWeight: '800',
+                fontSize: 24,
+                textTransform: 'capitalize',
+                textAlign: 'center',
+              }}>
+              {data.businessName}
+            </Text>
+          </>
+        ) : null}
+        <Text></Text>
+        {isApproved ? (
           <>
             <View ref={qrRef} style={styles.qrContainer}>
               <QRCode
@@ -131,10 +161,13 @@ const fetchProfile = async () => {
               onPress={shareQRCode}>
               <Text style={styles.buttonText}>Share QR Code</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.printButton]}
+              onPress={printQRCode}>
+              <Text style={styles.buttonText}>Print QR Code</Text>
+            </TouchableOpacity>
           </>
-        ) : null} 
-
-        {/* Purchase Plan Popup */}
+        ) : null}
         <Modal visible={showModal} transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -155,7 +188,6 @@ const fetchProfile = async () => {
 };
 
 export default GenerateMyQRCode;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -166,7 +198,7 @@ const styles = StyleSheet.create({
   qrContainer: {
     marginBottom: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 4,
@@ -178,7 +210,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 3,
@@ -212,7 +244,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  purchaseButton:{
-    backgroundColor:COLORS.darkblue
-  }
+  purchaseButton: {
+    backgroundColor: COLORS.darkblue,
+  },
+  printButton: {
+    backgroundColor: COLORS.darkblue, // Change this to your desired color
+  },
 });

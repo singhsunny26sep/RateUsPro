@@ -48,7 +48,6 @@ export default function Login({navigation}) {
 
     return valid;
   };
-
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
@@ -66,7 +65,8 @@ export default function Login({navigation}) {
         Alert.alert('Error', 'Login failed');
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while logging in');
+      console.log(error.response.data.msg,"5893457983473")
+      Alert.alert('Error', 'Wait For Admin approval');
     } finally {
       setLoading(false);
     }
