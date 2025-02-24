@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Modal,
   Linking,
 } from 'react-native';
-import {Instance} from '../../api/Instance';
+import { Instance } from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SubscriptionScreen = () => {
@@ -27,7 +27,7 @@ const SubscriptionScreen = () => {
       const response = await Instance.get(
         '/v1/api/subscriptions/users/subscriptionList',
         {
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
       console.log(response.data.result, 'this is subscription');
@@ -128,8 +128,8 @@ const SubscriptionScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 20, alignItems: 'center'},
-  title: {fontSize: 20, fontWeight: 'bold', marginBottom: 20},
+  container: { flex: 1, padding: 20, alignItems: 'center' },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
   planCard: {
     width: '80%',
     padding: 15,
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
   },
-  selectedPlan: {borderColor: 'green', borderWidth: 2},
-  planText: {fontSize: 18, fontWeight: 'bold'},
+  selectedPlan: { borderColor: 'green', borderWidth: 2 },
+  planText: { fontSize: 18, fontWeight: 'bold' },
 
   // Modal Styles
   modalContainer: {
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  modalTitle: {fontSize: 20, fontWeight: 'bold', marginBottom: 10},
-  modalText: {fontSize: 16, textAlign: 'center', marginBottom: 20},
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  modalText: { fontSize: 16, textAlign: 'center', marginBottom: 20 },
   callButton: {
     backgroundColor: 'blue',
     padding: 10,
@@ -173,8 +173,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  closeButtonText: {color: 'white', fontSize: 16},
-  buttonText: {color: 'white', fontSize: 16},
+  closeButtonText: { color: 'white', fontSize: 16 },
+  buttonText: { color: 'white', fontSize: 16 },
 });
 
 export default SubscriptionScreen;

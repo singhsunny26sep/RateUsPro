@@ -1,23 +1,15 @@
-import React, {useState} from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Alert,
-} from 'react-native';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, } from 'react-native';
 import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
 import CustomButton from '../../components/Buttons/CustomButton';
 import FastImage from 'react-native-fast-image';
-import {COLORS} from '../../theme';
-import {moderateScale, scale} from '../../utils/Scalling';
-import {Instance} from '../../api/Instance';
-import {Container} from '../../components/Container/Container';
+import { COLORS } from '../../theme';
+import { moderateScale, scale } from '../../utils/Scalling';
+import { Instance } from '../../api/Instance';
+import { Container } from '../../components/Container/Container';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -48,14 +40,12 @@ export default function Login({navigation}) {
 
     return valid;
   };
+
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      const response = await Instance.post('/v1/api/users/login', {
-        email,
-        password,
-      });
+      const response = await Instance.post('/v1/api/users/login', { email, password, });
       if (response.data.success) {
         await AsyncStorage.setItem('userToken', response.data.token);
         console.log('Token saved:', response.data.token);
@@ -65,73 +55,38 @@ export default function Login({navigation}) {
         Alert.alert('Error', 'Login failed');
       }
     } catch (error) {
-      console.log(error.response.data.msg,"5893457983473")
-      Alert.alert('Error', 'Wait For Admin approval');
+      console.log("error: ", error.response.data.msg)
+      Alert.alert('Error', error.response.data.msg || 'Wait For Admin approval');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container
-      statusBarStyle="dark-content"
-      statusBarBackgroundColor={COLORS.white}
-      backgroundColor={COLORS.white}>
+    <Container statusBarStyle="dark-content" statusBarBackgroundColor={COLORS.white} backgroundColor={COLORS.white}>
       <Text style={styles.Logintxt}>Login</Text>
       <ScrollView>
         <View style={styles.logoContainer}>
-          <FastImage
-            source={{
-              uri: 'https://cdn.dribbble.com/users/939581/screenshots/8455399/media/8d666597ca4d60f1804a41737fa4a372.gif',
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-            style={styles.Img}
-          />
+          <FastImage source={{ uri: 'https://cdn.dribbble.com/users/939581/screenshots/8455399/media/8d666597ca4d60f1804a41737fa4a372.gif', }} resizeMode={FastImage.resizeMode.contain} style={styles.Img} />
         </View>
 
         <View style={styles.inputContainer}>
-          <CustomTextInput
-            label="Email"
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-            error={emailError}
-          />
-          <CustomTextInput
-            label="Password"
-            placeholder="Enter your password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            error={passwordError}
-          />
+          <CustomTextInput label="Email" placeholder="Enter your email" keyboardType="email-address" value={email} autoCapitalize="none" onChangeText={setEmail} error={emailError} />
+          <CustomTextInput label="Password" placeholder="Enter your password" secureTextEntry value={password} onChangeText={setPassword} error={passwordError} />
         </View>
 
-        <TouchableOpacity
-          style={styles.forgotPasswordContainer}
-          onPress={() => navigation.navigate('ForgotPassword')}>
+        <TouchableOpacity style={styles.forgotPasswordContainer} onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgotPasswordText}>Forgot Password</Text>
         </TouchableOpacity>
 
         <View style={styles.buttonContainer}>
-          <CustomButton
-            title="Login"
-            style={styles.button}
-            onPress={handleLogin}
-            loading={loading}
-          />
-    
+          <CustomButton title="Login" style={styles.button} onPress={handleLogin} loading={loading} />
+
         </View>
-        <Text style={styles.alreadytxt}>
-          Don't have an account?
-          <Text
-            style={styles.SignUptxt}
-            onPress={() => navigation.navigate('SignUp')}>
-            SignUp
-          </Text>
+        <Text style={styles.alreadytxt}>Don't have an account?
+          <Text style={styles.SignUptxt} onPress={() => navigation.navigate('SignUp')}> SignUp</Text>
         </Text>
-        
+
       </ScrollView>
     </Container>
   );
@@ -177,7 +132,7 @@ const styles = StyleSheet.create({
     color: COLORS.primaryColor,
     fontWeight: 'bold',
   },
-  buttons:{
-    backgroundColor:COLORS.blue
+  buttons: {
+    backgroundColor: COLORS.blue
   }
 });

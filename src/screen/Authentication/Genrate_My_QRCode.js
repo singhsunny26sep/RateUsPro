@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Text,
   View,
@@ -8,14 +8,14 @@ import {
   Modal,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {Container} from '../../components/Container/Container';
-import {COLORS} from '../../theme';
-import {AppBar} from '../../components/AppBar/AppBar';
-import {Instance} from '../../api/Instance';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Container } from '../../components/Container/Container';
+import { COLORS } from '../../theme';
+import { AppBar } from '../../components/AppBar/AppBar';
+import { Instance } from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Share from 'react-native-share';
-import {captureRef} from 'react-native-view-shot';
+import { captureRef } from 'react-native-view-shot';
 import RNPrint from 'react-native-print';
 
 const GenerateMyQRCode = () => {
@@ -36,7 +36,7 @@ const GenerateMyQRCode = () => {
       }
 
       const response = await Instance.get('/v1/api/users/profile', {
-        headers: {Authorization: `Bearer ${token}`},
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const userData = response.data.result;
@@ -58,8 +58,8 @@ const GenerateMyQRCode = () => {
 
   useEffect(() => {
     fetchProfile();
-    const interval = setInterval(fetchProfile, 5000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(fetchProfile, 5000);
+    // return () => clearInterval(interval);
   }, []);
 
   const shareQRCode = async () => {
@@ -82,32 +82,34 @@ const GenerateMyQRCode = () => {
         format: 'png',
         quality: 1,
       });
-  
+
       // Save the QR Code to the device (optional)
-      const shareOptions = {
-        title: 'Download QR Code',
-        url: uri,
-        saveToFiles: true, // This will allow the user to save the file
-      };
-      await Share.open(shareOptions);
-  
+      /*  const shareOptions = {
+         title: 'Download QR Code',
+         url: uri,
+         saveToFiles: true, // This will allow the user to save the file
+       };
+       await Share.open(shareOptions); */
+
       // Print the QR Code
-      await RNPrint.print({filePath: uri});
+      await RNPrint.print({ filePath: uri });
     } catch (error) {
       console.error('Print Error:', error);
     }
   };
-  
+
 
   const goToSubscription = () => {
-    setShowModal(false);
     navigation.navigate('SubscriptionScreen');
+    setShowModal(false);
   };
+
   useFocusEffect(
     React.useCallback(() => {
-      setShowModal(false);
+      fetchProfile()
     }, []),
   );
+
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
@@ -116,33 +118,19 @@ const GenerateMyQRCode = () => {
       console.error('Logout Error:', error);
     }
   };
+
+
   return (
-    <Container
-      statusBarStyle="dark-content"
-      statusBarBackgroundColor={COLORS.white}
-      backgroundColor={COLORS.white}>
-      <AppBar
-        back
-        title="QR Code Generator"
-        rightIcon="sign-out"
-        onRightIconPress={handleLogout}
-      />
+    <Container statusBarStyle="dark-content" statusBarBackgroundColor={COLORS.white} backgroundColor={COLORS.white}>
+      <AppBar back title="QR Code Generator" rightIcon="sign-out" onRightIconPress={handleLogout} />
       <ScrollView contentContainerStyle={styles.container}>
         {data ? (
           <>
-            <Text
-              style={{
-                color: COLORS.black,
-                fontWeight: '800',
-                fontSize: 24,
-                textTransform: 'capitalize',
-                textAlign: 'center',
-              }}>
-              {data.businessName}
-            </Text>
+            <Text style={{ color: COLORS.black, fontWeight: '800', ontSize: 24, textTransform: 'capitalize', textAlign: 'center', }}>              {data.businessName}            </Text>
           </>
         ) : null}
         <Text></Text>
+
         {isApproved ? (
           <>
             <View ref={qrRef} style={styles.qrContainer}>
@@ -156,28 +144,26 @@ const GenerateMyQRCode = () => {
                 logoBackgroundColor="#FFEB3B"
               />
             </View>
-            <TouchableOpacity
-              style={[styles.button, styles.shareButton]}
-              onPress={shareQRCode}>
+            <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={shareQRCode}>
               <Text style={styles.buttonText}>Share QR Code</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.printButton]}
-              onPress={printQRCode}>
+
+            <TouchableOpacity style={[styles.button, styles.printButton]} onPress={printQRCode}>
               <Text style={styles.buttonText}>Print QR Code</Text>
             </TouchableOpacity>
           </>
         ) : null}
+
         <Modal visible={showModal} transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalText}>
-                You need an active subscription to generate a QR code.
-              </Text>
-              <TouchableOpacity
-                style={[styles.button, styles.purchaseButton]}
-                onPress={goToSubscription}>
+              <Text style={styles.modalText}>You need an active subscription to generate a QR code.</Text>
+              <TouchableOpacity style={[styles.button, styles.purchaseButton]} onPress={goToSubscription}>
                 <Text style={styles.buttonText}>Purchase Plan</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, styles.purchaseButton]} onPress={() => navigation.goBack()}>
+                <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -198,7 +184,7 @@ const styles = StyleSheet.create({
   qrContainer: {
     marginBottom: 30,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 4,
@@ -210,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 3,

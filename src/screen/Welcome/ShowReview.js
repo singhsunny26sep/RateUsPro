@@ -1,26 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Modal,
-  ScrollView,
-  Image,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Modal, ScrollView, Image, } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import {COLORS} from '../../theme';
-import {Container} from '../../components/Container/Container';
-import {scale, verticalScale, moderateScale} from '../../utils/Scalling';
+import { COLORS } from '../../theme';
+import { Container } from '../../components/Container/Container';
+import { scale, verticalScale, moderateScale } from '../../utils/Scalling';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Instance} from '../../api/Instance';
+import { Instance } from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SplashScreen from '../SplashScreen/SplashScreen';
 import moment from 'moment';
-const RatingStars = ({rating}) => {
+const RatingStars = ({ rating }) => {
+
   let stars = [];
   for (let i = 0; i < 5; i++) {
     stars.push(
@@ -33,10 +25,11 @@ const RatingStars = ({rating}) => {
     );
   }
   return (
-    <View style={{flexDirection: 'row', marginTop: scale(5)}}>{stars}</View>
+    <View style={{ flexDirection: 'row', marginTop: scale(5) }}>{stars}</View>
   );
 };
-export default function ShowReview({navigation}) {
+
+export default function ShowReview({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [qrvalue, setQrvalue] = useState('');
   const [hasFetched, setHasFetched] = useState(false);
@@ -48,6 +41,7 @@ export default function ShowReview({navigation}) {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
   const [data, setData] = useState(null);
+
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
@@ -64,11 +58,7 @@ export default function ShowReview({navigation}) {
         console.error('Token is missing');
         return;
       }
-      const response = await Instance.get('/v1/api/users/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await Instance.get('/v1/api/users/profile', { headers: { Authorization: `Bearer ${token}`, }, });
       console.log(response, 'this is response data');
       setQrvalue(response.data.result._id);
       setData(response.data.result);
@@ -77,22 +67,14 @@ export default function ShowReview({navigation}) {
       console.error('Error fetching profile:', error);
     }
   };
+
   const fetchData = async () => {
     if (!qrvalue || hasFetched) return;
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem('userToken');
       console.log(token, 'this is token data');
-      const response = await fetch(
-        `https://rateus-backend.onrender.com/v1/api/rate/user/${qrvalue}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      const response = await fetch(`https://rateus-backend.onrender.com/v1/api/rate/user/${qrvalue}`, { method: 'GET', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', }, },);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -107,6 +89,7 @@ export default function ShowReview({navigation}) {
       setLoading(false);
     }
   };
+
   const filterReviewsByDate = () => {
     if (!startDate || !endDate) return;
     const filtered = reviews.filter(review => {
@@ -115,115 +98,83 @@ export default function ShowReview({navigation}) {
     });
     setFilteredReviews(filtered);
   };
+
   useEffect(() => {
     fetchProfile();
   }, []);
+
   useEffect(() => {
     if (qrvalue && qrvalue.length > 1 && !hasFetched) {
       fetchData();
     }
   }, [qrvalue]);
+
   const modalOpen = () => {
     setMenuVisible(true);
   };
+
   return (
-    <Container
-      statusBarStyle="light-content"
-      statusBarBackgroundColor={COLORS.primaryColor}
-      backgroundColor={COLORS.white}>
+    <Container statusBarStyle="light-content" statusBarBackgroundColor={COLORS.primaryColor} backgroundColor={COLORS.white}>
       <ScrollView>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: COLORS.primaryColor,
-            padding: 10,
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-            <Image
-              style={styles.imageLogo}
-              resizeMode="contain"
-              source={require('../../assets/images/logo.jpg')}
-            />
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.primaryColor, padding: 10, }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image style={styles.imageLogo} resizeMode="contain" source={require('../../assets/images/logo.jpg')} />
             {data ? (
               <>
-                <Text
-                  style={{
-                    fontWeight: '800',
-                    textTransform: 'capitalize',
-                    fontSize: 20,
-                    color: COLORS.white,
-                  }}>
-                  {data.name}
-                </Text>
+                <Text style={{ fontWeight: '800', textTransform: 'capitalize', fontSize: 20, color: COLORS.white, }}>{data.name}</Text>
               </>
             ) : null}
           </View>
-          <View style={{flexDirection: 'row', gap: 10}}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Genrate_My_QRCode')}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Genrate_My_QRCode')}>
               <MaterialIcons name="qr-code-scanner" size={30} color="white" />
             </TouchableOpacity>
+
             <TouchableOpacity onPress={modalOpen}>
               <Ionicons name="menu" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>
+
         {/* Date Selection Buttons */}
         <View style={styles.datePickerContainer}>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setOpenStartDatePicker(true)}>
-            <Text style={styles.dateText}>
-              {startDate ? startDate.toDateString() : 'Select Start Date'}
-            </Text>
+          <TouchableOpacity style={styles.dateButton} onPress={() => setOpenStartDatePicker(true)}>
+            <Text style={styles.dateText}>{startDate ? startDate.toDateString() : 'Select Start Date'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setOpenEndDatePicker(true)}>
-            <Text style={styles.dateText}>
-              {endDate ? endDate.toDateString() : 'Select End Date'}
-            </Text>
+          <TouchableOpacity style={styles.dateButton} onPress={() => setOpenEndDatePicker(true)}>
+            <Text style={styles.dateText}>{endDate ? endDate.toDateString() : 'Select End Date'}</Text>
           </TouchableOpacity>
         </View>
-        <Modal
-      animationType="fade"
-      transparent={true}
-      visible={menuVisible}
-      onRequestClose={() => setMenuVisible(false)}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setMenuVisible(false)}
-          >
-            <Text style={styles.closeText}>✕</Text>
-          </TouchableOpacity>
 
-          <Text style={styles.modalTitle}>Menu</Text>
+        <Modal animationType="fade" transparent={true} visible={menuVisible} onRequestClose={() => setMenuVisible(false)}>
+          <View style={styles.overlay}>
+            <View style={styles.modalContainer}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setMenuVisible(false)}>
+                <Text style={styles.closeText}>✕</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity onPress={(()=>{navigation.navigate("CheckSubscription")})} style={styles.menuItem}>
-            <Text style={styles.menuText}>Subscription</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={(()=>{navigation.navigate("PromotionalMessage")})} style={styles.menuItem}>
-            <Text style={styles.menuText}>Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Report</Text>
-          </TouchableOpacity>
+              <Text style={styles.modalTitle}>Menu</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Help & Support</Text>
-          </TouchableOpacity>
+              <TouchableOpacity onPress={(() => { navigation.navigate("CheckSubscription") })} style={styles.menuItem}>
+                <Text style={styles.menuText}>Subscription</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={(() => { navigation.navigate("PromotionalMessage") })} style={styles.menuItem}>
+                <Text style={styles.menuText}>Message</Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuText}>Report</Text>
+              </TouchableOpacity> */}
 
-          <TouchableOpacity style={[styles.menuItem, styles.logoutButton]} onPress={handleLogout}>
-            <Text style={[styles.menuText, styles.logoutText]}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("HelpAndSupport")}>
+                <Text style={styles.menuText}>Help & Support</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.menuItem, styles.logoutButton]} onPress={handleLogout}>
+                <Text style={[styles.menuText, styles.logoutText]}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         {/* Date Pickers */}
         <DatePicker
@@ -236,6 +187,7 @@ export default function ShowReview({navigation}) {
           }}
           onCancel={() => setOpenStartDatePicker(false)}
         />
+
         <DatePicker
           modal
           open={openEndDatePicker}
@@ -251,22 +203,13 @@ export default function ShowReview({navigation}) {
           data={filteredReviews}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <TouchableOpacity>
               <View style={styles.reviewCard}>
-                <Text
-                  style={{
-                    color: COLORS.black,
-                    fontWeight: '800',
-                    textTransform: 'capitalize',
-                  }}>
-                  {item.username}
-                </Text>
+                <Text style={{ color: COLORS.black, fontWeight: '800', textTransform: 'capitalize', }}>{item.username}</Text>
                 <RatingStars rating={item.star} />
                 <Text style={styles.comment}>{item.comment}</Text>
-                <Text style={styles.reviewDate}>
-                  {moment(item.createdAt).format('hh:mm A')}
-                </Text>
+                <Text style={styles.reviewDate}>{moment(item.createdAt).format('hh:mm A')}</Text>
               </View>
             </TouchableOpacity>
           )}

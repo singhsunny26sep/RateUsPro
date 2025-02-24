@@ -1,5 +1,5 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import Home from '../screen/Home/Home';
 import SplashScreen from '../screen/SplashScreen/SplashScreen';
 import SignUp from '../screen/Authentication/SignUp';
@@ -17,16 +17,13 @@ import ShowReview from '../screen/Welcome/ShowReview';
 import SubscriptionScreen from '../screen/Subscription/subscription';
 import CheckSubscription from '../screen/Subscription/CheckSubscription';
 import PromotionalMessage from '../screen/Message/Message';
+import HelpAndSupport from '../screen/HelpAndSupport';
 
 const Stack = createNativeStackNavigator();
 export default function NavigationScreen() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SplashScreen"
-        screenOptions={{
-          headerShown: false,
-        }}>
+      <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false, }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="Login" component={Login} />
@@ -40,7 +37,7 @@ export default function NavigationScreen() {
         <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
         <Stack.Screen name="CheckSubscription" component={CheckSubscription} />
         <Stack.Screen name="PromotionalMessage" component={PromotionalMessage} />
-
+        <Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
 
         <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} />
         <Stack.Screen name="One_to_ThreeStarPage" component={One_to_ThreeStarPage} />

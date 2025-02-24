@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -7,21 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {moderateScale, scale, verticalScale} from '../../utils/Scalling';
+import { moderateScale, scale, verticalScale } from '../../utils/Scalling';
 import { COLORS } from '../../theme';
 
-const CustomTextInput = ({
-  label,
-  placeholder,
-  secureTextEntry,
-  keyboardType,
-  value,
-  onChangeText,
-  error,
-  maxLength,
-  leftIcon,
-  placeholderStyle,
-}) => {
+const CustomTextInput = ({ label, placeholder, secureTextEntry, keyboardType, value, onChangeText, error, maxLength, leftIcon, placeholderStyle, autoCapitalize }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -48,6 +37,7 @@ const CustomTextInput = ({
           secureTextEntry={secureTextEntry && !showPassword}
           keyboardType={keyboardType}
           value={value}
+          autoCapitalize={autoCapitalize}
           onChangeText={onChangeText}
           maxLength={maxLength}
         />
