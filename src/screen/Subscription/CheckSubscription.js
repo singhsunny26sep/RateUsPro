@@ -29,22 +29,6 @@ export default function CheckSubscription() {
     })
   }
 
-  // Dummy subscription data (Replace with API response)
-  const subscriptions = [
-    {
-      id: "1",
-      name: "Premium Plan",
-      startDate: "2024-07-01",
-      endDate: "2025-07-01",
-    },
-    {
-      id: "2",
-      name: "Basic Plan",
-      startDate: "2023-06-10",
-      endDate: "2024-06-10",
-    },
-  ];
-
   useEffect(() => {
     getHistory()
   }, [loading])
