@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import axios from 'axios';
-import {Container} from '../../components/Container/Container';
-import {COLORS} from '../../theme';
-import {moderateScale, scale} from '../../utils/Scalling';
+import { Container } from '../../components/Container/Container';
+import { COLORS } from '../../theme';
+import { moderateScale, scale } from '../../utils/Scalling';
 import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
-import {AppBar} from '../../components/AppBar/AppBar';
+import { AppBar } from '../../components/AppBar/AppBar';
 import CustomButton from '../../components/Buttons/CustomButton';
 import FastImage from 'react-native-fast-image';
-import {Instance} from '../../api/Instance';
+import { Instance } from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 
-export default function SignUp({navigation}) {
+export default function SignUp({ navigation }) {
   const [formData, setFormData] = useState({
     businessType: '',
     businessName: '',
@@ -26,7 +26,7 @@ export default function SignUp({navigation}) {
   console.log(formData, '++++++++++++++++++++++++');
   const [errors, setErrors] = useState({});
   const handleInputChange = (field, value) => {
-    setFormData({...formData, [field]: value});
+    setFormData({ ...formData, [field]: value });
   };
   const [data, setData] = useState([]);
   console.log(data, 'this is data ');
@@ -225,6 +225,7 @@ export default function SignUp({navigation}) {
               <Picker.Item label="Bihar" value="bihar" />
               <Picker.Item label="Chhattisgarh" value="chhattisgarh" />
               <Picker.Item label="Goa" value="goa" />
+              <Picker.Item label="Delhi (Ncr)" value="delhi" />
               <Picker.Item label="Gujarat" value="gujarat" />
               <Picker.Item label="Haryana" value="haryana" />
               <Picker.Item label="Himachal Pradesh" value="himachal_pradesh" />
