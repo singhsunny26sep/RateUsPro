@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, Image, TouchableOpacity, Alert} from 'react-native';
 import {Container} from '../../components/Container/Container';
 import {COLORS} from '../../theme';
 import {AppBar} from '../../components/AppBar/AppBar';
@@ -8,8 +8,53 @@ import {verticalScale, scale, moderateScale} from '../../utils/Scalling';
 import OtpInput from '../../components/OtpInput/OtpInput';
 import CustomButton from '../../components/Buttons/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
+import { Instance } from '../../api/Instance';
+import { FORGOT_PASSWORD_ENDPOINTS } from '../../api/Api_End_Point';
 
-export default function New_Password({}) {
+export default function New_Password({navigation, route}) {
+  const {email, otp} = route.params;
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleResetPassword = async () => {
+    if (!password || password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await Instance.put("/v1/api/users/sendForgotPasswordOtp", {
+        email: email,
+        otp: otp,
+        password: password,
+      });
+
+      if (response.data.success) {
+        Alert.alert('Success', 'Password reset successfully', [
+          {text: 'OK', onPress: () => navigation.popToTop()},
+        ]);
+      } else {
+        Alert.alert('Error', response.data.message || 'Password reset failed');
+      }
+    } catch (error) {
+      console.log('API Error:', error.response?.data);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container
       statusBarStyle="dark-content"
@@ -33,14 +78,24 @@ export default function New_Password({}) {
           placeholder="New password"
           leftIcon="lock-closed"
           secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
         />
         <CustomTextInput
-          placeholder="Confrim password"
+          placeholder="Confirm password"
           leftIcon="lock-closed"
           secureTextEntry={true}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          style={{marginTop: scale(10)}}
         />
       </View>
-      <CustomButton title="Verify email" style={styles.button} />
+      <CustomButton 
+        title="Reset Password" 
+        style={styles.button} 
+        onPress={handleResetPassword}
+        loading={loading}
+      />
     </Container>
   );
 }

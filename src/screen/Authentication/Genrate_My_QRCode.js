@@ -62,20 +62,32 @@ const GenerateMyQRCode = () => {
     // return () => clearInterval(interval);
   }, []);
 
-  const shareQRCode = async () => {
-    try {
-      const qrURL = `https://rating-tau-nine.vercel.app/screens/ReviewForm?scanned=${profileData}`;
-      const shareOptions = {
-        title: 'Share QR Code',
-        message: `Scan this QR Code: ${qrURL}`,
-        url: qrURL,
-      };
-      await Share.open(shareOptions);
-    } catch (error) {
-      console.log('Error sharing:', error);
-    }
-  };
-
+  // const shareQRCode = async () => {
+  //   try {
+  //     const qrURL = `https://rating-tau-nine.vercel.app/screens/ReviewForm?scanned=${profileData}`;
+  //     const shareOptions = {
+  //       title: 'Share QR Code',
+  //       message: `Scan this QR Code: ${qrURL}`,
+  //       url: qrURL,
+  //     };
+  //     await Share.open(shareOptions);
+  //   } catch (error) {
+  //     console.log('Error sharing:', error);
+  //   }
+  // };
+const shareQRCode = async () => {
+  try {
+    const qrURL = `https://rating-tau-nine.vercel.app/screens/ReviewForm?scanned=${profileData}`;
+    const shareOptions = {
+      title: 'Share QR Code',
+      message: `Scan this QR Code: ${qrURL}`,
+      url: qrURL,
+    };
+    await Share.open(shareOptions);
+  } catch (error) {
+    console.log('Error sharing:', error);
+  }
+};
   const printQRCode = async () => {
     try {
       const uri = await captureRef(qrRef, {
@@ -144,9 +156,9 @@ const GenerateMyQRCode = () => {
                 logoBackgroundColor="#FFEB3B"
               />
             </View>
-            <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={shareQRCode}>
-              <Text style={styles.buttonText}>Share QR Code</Text>
-            </TouchableOpacity>
+         <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={shareQRCode}>
+  <Text style={styles.buttonText}>Share QR Code</Text>
+</TouchableOpacity>
 
             <TouchableOpacity style={[styles.button, styles.printButton]} onPress={printQRCode}>
               <Text style={styles.buttonText}>Print QR Code</Text>

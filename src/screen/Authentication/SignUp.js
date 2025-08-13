@@ -85,7 +85,6 @@ export default function SignUp({ navigation }) {
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6)
       newErrors.password = 'Password should be at least 6 characters long';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
