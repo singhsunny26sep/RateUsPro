@@ -2,11 +2,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 
 export default function CameraScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(false);
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
 
   useEffect(() => {
     checkCameraPermission();
@@ -49,6 +51,13 @@ export default function CameraScreen({ navigation }) {
       >
         <Text style={{ color: 'white', fontSize: 16 }}>Close Camera</Text>
       </TouchableOpacity>
+            <View style={styles.bannerContainer}>
+                      <BannerAd
+                        unitId={adUnitId}
+                        size={BannerAdSize.FULL_BANNER}
+                        requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+                      />
+                    </View>
     </View>
   );
 }

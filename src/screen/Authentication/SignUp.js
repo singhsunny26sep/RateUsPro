@@ -11,6 +11,7 @@ import FastImage from 'react-native-fast-image';
 import { Instance } from '../../api/Instance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 export default function SignUp({ navigation }) {
   const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ export default function SignUp({ navigation }) {
   });
   console.log(formData, '++++++++++++++++++++++++');
   const [errors, setErrors] = useState({});
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
+  
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
@@ -275,6 +278,13 @@ export default function SignUp({ navigation }) {
           onPress={handleSignUp}
           loading={loading}
         />
+        <View style={styles.bannerContainer}>
+                        <BannerAd
+                          unitId={adUnitId}
+                          size={BannerAdSize.FULL_BANNER}
+                          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+                        />
+                      </View>
       </ScrollView>
     </Container>
   );

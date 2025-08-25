@@ -2,8 +2,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { COLORS } from '../theme'
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 const HelpAndSupport = ({ navigation }) => {
+    const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
+    
     return (
         <View style={styles.container}>
             {/* Header with Back Button */}
@@ -20,6 +23,13 @@ const HelpAndSupport = ({ navigation }) => {
                 <Text style={styles.subscriptionName}>Email: binekar.snehal@gmail.com</Text>
                 <Text style={styles.subscriptionDate}>Website: www.rateuspro.in</Text>
             </View>
+            <View style={styles.bannerContainer}>
+                            <BannerAd
+                              unitId={adUnitId}
+                              size={BannerAdSize.FULL_BANNER}
+                              requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+                            />
+                          </View>
         </View>
     )
 }

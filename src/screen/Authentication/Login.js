@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, } from 'react-native';
+// 👇 sab imports wahi rakho jo tumhare code me hain
+import React, { useState, useEffect } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+} from 'react-native';
 import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
 import CustomButton from '../../components/Buttons/CustomButton';
 import FastImage from 'react-native-fast-image';
@@ -9,12 +17,45 @@ import { Instance } from '../../api/Instance';
 import { Container } from '../../components/Container/Container';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// 🔹 AdMob import
+import {
+  InterstitialAd,
+  AdEventType,
+  TestIds,
+} from 'react-native-google-mobile-ads';
+
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // 🔹 Test ID (Production me apna adUnitId daalo)
+  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxxxx/yyyyyyyyyy';
+
+  // 🔹 Interstitial Ad create
+  const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: true,
+  });
+
+  useEffect(() => {
+    const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+      interstitial.show(); // ✅ page load hote hi show hoga
+    });
+
+    const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('Ad closed');
+    });
+
+    // 🔹 Load ad on mount
+    interstitial.load();
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeClosed();
+    };
+  }, []);
 
   const validate = () => {
     let valid = true;
@@ -31,7 +72,7 @@ export default function Login({ navigation }) {
     if (!password) {
       setPasswordError('Password is required');
       valid = false;
-    } else if (password.length < 5) {
+    } else if (password.length < 6) {
       setPasswordError('Password must be at least 6 characters');
       valid = false;
     } else {
@@ -45,48 +86,85 @@ export default function Login({ navigation }) {
     if (!validate()) return;
     setLoading(true);
     try {
-      const response = await Instance.post('/v1/api/users/login', { email, password, });
+      const response = await Instance.post('/v1/api/users/login', { email, password });
       if (response.data.success) {
         await AsyncStorage.setItem('userToken', response.data.token);
-        console.log('Token saved:', response.data.token);
         Alert.alert('Success', response.data.msg);
         navigation.navigate('showReview');
       } else {
         Alert.alert('Error', 'Login failed');
       }
     } catch (error) {
-      console.log("error: ", error.response.data.msg)
-      Alert.alert('Error', error.response.data.msg || 'Wait For Admin approval');
+      Alert.alert('Error', error.response?.data?.msg || 'Wait For Admin approval');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container statusBarStyle="dark-content" statusBarBackgroundColor={COLORS.white} backgroundColor={COLORS.white}>
+    <Container
+      statusBarStyle="dark-content"
+      statusBarBackgroundColor={COLORS.white}
+      backgroundColor={COLORS.white}
+    >
       <Text style={styles.Logintxt}>Login</Text>
       <ScrollView>
         <View style={styles.logoContainer}>
-          <FastImage source={{ uri: 'https://cdn.dribbble.com/users/939581/screenshots/8455399/media/8d666597ca4d60f1804a41737fa4a372.gif', }} resizeMode={FastImage.resizeMode.contain} style={styles.Img} />
+          <FastImage
+            source={{
+              uri: 'https://cdn.dribbble.com/users/939581/screenshots/8455399/media/8d666597ca4d60f1804a41737fa4a372.gif',
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+            style={styles.Img}
+          />
         </View>
 
         <View style={styles.inputContainer}>
-          <CustomTextInput label="Email" placeholder="Enter your email" keyboardType="email-address" value={email} autoCapitalize="none" onChangeText={setEmail} error={emailError} />
-          <CustomTextInput label="Password" placeholder="Enter your password" secureTextEntry value={password} onChangeText={setPassword} error={passwordError} />
+          <CustomTextInput
+            label="Email"
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            value={email}
+            autoCapitalize="none"
+            onChangeText={setEmail}
+            error={emailError}
+          />
+          <CustomTextInput
+            label="Password"
+            placeholder="Enter your password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            error={passwordError}
+          />
         </View>
 
-        <TouchableOpacity style={styles.forgotPasswordContainer} onPress={() => navigation.navigate('ForgotPassword')}>
+        <TouchableOpacity
+          style={styles.forgotPasswordContainer}
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >
           <Text style={styles.forgotPasswordText}>Forgot Password</Text>
         </TouchableOpacity>
 
         <View style={styles.buttonContainer}>
-          <CustomButton title="Login" style={styles.button} onPress={handleLogin} loading={loading} />
-
+          <CustomButton
+            title="Login"
+            style={styles.button}
+            onPress={handleLogin}
+            loading={loading}
+          />
         </View>
-        <Text style={styles.alreadytxt}>Don't have an account?
-          <Text style={styles.SignUptxt} onPress={() => navigation.navigate('SignUp')}> SignUp</Text>
-        </Text>
 
+        <Text style={styles.alreadytxt}>
+          Don't have an account?
+          <Text
+            style={styles.SignUptxt}
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            {' '}
+            SignUp
+          </Text>
+        </Text>
       </ScrollView>
     </Container>
   );
@@ -132,7 +210,4 @@ const styles = StyleSheet.create({
     color: COLORS.primaryColor,
     fontWeight: 'bold',
   },
-  buttons: {
-    backgroundColor: COLORS.blue
-  }
 });

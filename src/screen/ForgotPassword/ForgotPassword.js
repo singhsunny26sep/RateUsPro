@@ -8,10 +8,12 @@ import {AppBar} from '../../components/AppBar/AppBar';
 import {moderateScale, scale, verticalScale} from '../../utils/Scalling';
 import { Instance } from '../../api/Instance';
 import { FORGOT_PASSWORD_ENDPOINTS } from '../../api/Api_End_Point';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
 
   const handleSendOTP = async () => {
     if (!email) {
@@ -86,6 +88,13 @@ const ForgotPassword = ({navigation}) => {
         onPress={handleSendOTP}
         loading={loading}
       />
+      <View style={styles.bannerContainer}>
+                <BannerAd
+                  unitId={adUnitId}
+                  size={BannerAdSize.FULL_BANNER}
+                  requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+                />
+              </View>
     </Container>
   );
 };

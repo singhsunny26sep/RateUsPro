@@ -1,13 +1,15 @@
-import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, Image, Animated} from 'react-native';
-import {Container} from '../../components/Container/Container';
-import {COLORS} from '../../theme';
-import {moderateScale, scale} from '../../utils/Scalling';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, Image, Animated } from 'react-native';
+import { Container } from '../../components/Container/Container';
+import { COLORS } from '../../theme';
+import { moderateScale, scale } from '../../utils/Scalling';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // import AsyncStorage
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
-export default function SplashScreen({navigation}) {
+export default function SplashScreen({ navigation }) {
   const imageAnim = useRef(new Animated.Value(-200)).current;
   const textAnim = useRef(new Animated.Value(200)).current;
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -51,7 +53,7 @@ export default function SplashScreen({navigation}) {
       backgroundColor={COLORS.white}>
       <View style={styles.imageContainer}>
         <Animated.View
-          style={[styles.imageWrapper, {transform: [{translateY: imageAnim}]}]}>
+          style={[styles.imageWrapper, { transform: [{ translateY: imageAnim }] }]}>
           <Image
             source={{
               uri: 'https://cdni.iconscout.com/illustration/premium/thumb/people-giving-online-rating-illustration-download-in-svg-png-gif-file-formats--customer-feedback-star-pack-business-illustrations-4642814.png',
@@ -60,9 +62,16 @@ export default function SplashScreen({navigation}) {
           />
         </Animated.View>
         <Animated.Text
-          style={[styles.ratingText, {transform: [{translateY: textAnim}]}]}>
+          style={[styles.ratingText, { transform: [{ translateY: textAnim }] }]}>
           RateUs Pro
         </Animated.Text>
+      </View>
+      <View style={styles.bannerContainer}>
+        <BannerAd
+          unitId={adUnitId}
+          size={BannerAdSize.FULL_BANNER}
+          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+        />
       </View>
     </Container>
   );
