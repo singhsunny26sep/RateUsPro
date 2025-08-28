@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
-import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+
 import { Container } from '../../components/Container/Container';
 import { COLORS } from '../../theme';
 import { moderateScale, scale } from '../../utils/Scalling';
 import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
-import { AppBar } from '../../components/AppBar/AppBar';
 import CustomButton from '../../components/Buttons/CustomButton';
-import FastImage from 'react-native-fast-image';
 import { Instance } from '../../api/Instance';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Picker } from '@react-native-picker/picker';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 export default function SignUp({ navigation }) {
   const [formData, setFormData] = useState({
@@ -24,58 +23,51 @@ export default function SignUp({ navigation }) {
     state: '',
     password: '',
   });
-  console.log(formData, '++++++++++++++++++++++++');
+
   const [errors, setErrors] = useState({});
-  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
-  
+  const [loading, setLoading] = useState(true);
+
+  // 🔽 Business Type Dropdown states
+  const [open, setOpen] = useState(false);
+  const [businessItems, setBusinessItems] = useState([]);
+  const [businessType, setBusinessType] = useState(null);
+
+  const adUnitId = __DEV__
+    ? TestIds.BANNER
+    : 'ca-app-pub-8740472521955564~8207548068';
+
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
-  const [data, setData] = useState([]);
-  console.log(data, 'this is data ');
-  const [loading, setLoading] = useState(true);
-  const [selectedState, setSelectedState] = useState('');
 
+  // 🔽 Fetch Business Types from API
   const fetchData = async () => {
+    console.log()
     try {
       const response = await fetch(
         'https://rateus-backend.onrender.com/v1/api/business',
       );
       const result = await response.json();
-      console.log(result, 'this is result@@@@@@@@@@@@@@@@@@@@@@@');
-      setData(result?.result);
+      const formatted = result?.result?.map(panel => ({
+        label: panel.name,
+        value: panel._id,
+      }));
+      setBusinessItems(formatted);
+      console.log(businessItems,"this is bussinuess type")
     } catch (error) {
       console.error('Error fetching business data:', error);
     } finally {
       setLoading(false);
     }
   };
-  const fetchStates = async () => {
-    try {
-      const response = await fetch(
-        'https://api.countrystatecity.in/v1/countries/IN/states',
-        {
-          headers: {
-            'X-CSCAPI-KEY': 'YOUR_API_KEY', // 👈 Replace with your actual API key
-          },
-        },
-      );
-      const result = await response.json();
-      setStates(result);
-    } catch (error) {
-      console.error('Error fetching states:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   useEffect(() => {
     fetchData();
-    fetchStates();
   }, []);
+
   const validate = () => {
     const newErrors = {};
-    if (!formData.businessType)
-      newErrors.businessType = 'Business type is required';
+    if (!businessType) newErrors.businessType = 'Business type is required';
     if (!formData.businessName)
       newErrors.businessName = 'Business name is required';
     if (!formData.ownerMobileNo)
@@ -88,6 +80,7 @@ export default function SignUp({ navigation }) {
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6)
       newErrors.password = 'Password should be at least 6 characters long';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -102,16 +95,15 @@ export default function SignUp({ navigation }) {
           password: formData.password,
           role: 'vendor',
           businessName: formData.businessName,
-          businessType: formData.businessType,
+          businessType: businessType, // ✅ selected value
           mobile: formData.ownerMobileNo,
           whatsappNumber: formData.whatsappNo,
           city: formData.city,
           state: formData.state,
         });
+
         if (response.data.success) {
           Alert.alert('Success', response.data.msg);
-          console.log('Response:', response.data);
-          console.log('Token:', response.data.token);
           await AsyncStorage.setItem('userToken', response.data.token);
           navigation.navigate('Genrate_My_QRCode');
         } else {
@@ -146,25 +138,24 @@ export default function SignUp({ navigation }) {
             style={styles.Img}
           />
         </View>
+
         <View style={styles.inputContainer}>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={formData.businessType}
-              onValueChange={itemValue =>
-                handleInputChange('businessType', itemValue)
-              }
-              style={styles.picker}>
-              <Picker.Item label="Select Business Type" value="" />
-              {data.map(panel => (
-                <Picker.Item
-                  key={panel._id}
-                  label={panel.name}
-                  value={panel._id}
-                />
-              ))}
-            </Picker>
-          </View>
-          {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
+          {/* 🔽 Business Type Dropdown */}
+          <DropDownPicker
+            open={open}
+            value={businessType}
+            items={businessItems}
+            setOpen={setOpen}
+            setValue={setBusinessType}
+            setItems={setBusinessItems}
+            placeholder="Select Business Type"
+            style={styles.dropdown}
+            dropDownContainerStyle={styles.dropdownContainer}
+          />
+          {errors.businessType && (
+            <Text style={styles.error}>{errors.businessType}</Text>
+          )}
+
           <CustomTextInput
             placeholder="Name of business"
             leftIcon="business"
@@ -205,56 +196,31 @@ export default function SignUp({ navigation }) {
             onChangeText={text => handleInputChange('city', text)}
             error={errors.city}
           />
-          {/* <CustomTextInput
-            placeholder="State"
-            leftIcon="location"
-            value={formData.state}
-            onChangeText={text => handleInputChange('state', text)}
-            error={errors.state}
-          /> */}
+
+          {/* State Picker (Static for Now) */}
           <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={formData.state}
-              onValueChange={itemValue => handleInputChange('state', itemValue)}
-              style={styles.picker}>
-              <Picker.Item label="Select State" value="" />
-              <Picker.Item label="Andhra Pradesh" value="andhra_pradesh" />
-              <Picker.Item
-                label="Arunachal Pradesh"
-                value="arunachal_pradesh"
-              />
-              <Picker.Item label="Assam" value="assam" />
-              <Picker.Item label="Bihar" value="bihar" />
-              <Picker.Item label="Chhattisgarh" value="chhattisgarh" />
-              <Picker.Item label="Goa" value="goa" />
-              <Picker.Item label="Delhi (Ncr)" value="delhi" />
-              <Picker.Item label="Gujarat" value="gujarat" />
-              <Picker.Item label="Haryana" value="haryana" />
-              <Picker.Item label="Himachal Pradesh" value="himachal_pradesh" />
-              <Picker.Item label="Jharkhand" value="jharkhand" />
-              <Picker.Item label="Karnataka" value="karnataka" />
-              <Picker.Item label="Kerala" value="kerala" />
-              <Picker.Item label="Madhya Pradesh" value="madhya_pradesh" />
-              <Picker.Item label="Maharashtra" value="maharashtra" />
-              <Picker.Item label="Manipur" value="manipur" />
-              <Picker.Item label="Meghalaya" value="meghalaya" />
-              <Picker.Item label="Mizoram" value="mizoram" />
-              <Picker.Item label="Nagaland" value="nagaland" />
-              <Picker.Item label="Odisha" value="odisha" />
-              <Picker.Item label="Punjab" value="punjab" />
-              <Picker.Item label="Rajasthan" value="rajasthan" />
-              <Picker.Item label="Sikkim" value="sikkim" />
-              <Picker.Item label="Tamil Nadu" value="tamil_nadu" />
-              <Picker.Item label="Telangana" value="telangana" />
-              <Picker.Item label="Tripura" value="tripura" />
-              <Picker.Item label="Uttar Pradesh" value="uttar_pradesh" />
-              <Picker.Item label="Uttarakhand" value="uttarakhand" />
-              <Picker.Item label="West Bengal" value="west_bengal" />
-            </Picker>
+            <DropDownPicker
+              open={formData.openState || false}
+              value={formData.state}
+              items={[
+                { label: 'Delhi (NCR)', value: 'delhi' },
+                { label: 'Maharashtra', value: 'maharashtra' },
+                { label: 'Uttar Pradesh', value: 'uttar_pradesh' },
+                { label: 'Bihar', value: 'bihar' },
+                { label: 'Punjab', value: 'punjab' },
+              ]}
+              setOpen={val => handleInputChange('openState', val)}
+              setValue={val => handleInputChange('state', val())}
+              setItems={() => {}}
+              placeholder="Select State"
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+            />
           </View>
           {errors.state ? (
             <Text style={styles.error}>{errors.state}</Text>
           ) : null}
+
           <CustomTextInput
             placeholder="Password"
             secureTextEntry
@@ -264,6 +230,7 @@ export default function SignUp({ navigation }) {
             error={errors.password}
           />
         </View>
+
         <Text style={styles.alreadytxt}>
           Already have an account?
           <Text
@@ -272,19 +239,21 @@ export default function SignUp({ navigation }) {
             Login
           </Text>
         </Text>
+
         <CustomButton
           title="CREATE ACCOUNT"
           style={styles.button}
           onPress={handleSignUp}
           loading={loading}
         />
+
         <View style={styles.bannerContainer}>
-                        <BannerAd
-                          unitId={adUnitId}
-                          size={BannerAdSize.FULL_BANNER}
-                          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
-                        />
-                      </View>
+          <BannerAd
+            unitId={adUnitId}
+            size={BannerAdSize.FULL_BANNER}
+            requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+          />
+        </View>
       </ScrollView>
     </Container>
   );
@@ -294,12 +263,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
   },
-  logo: {
-    height: scale(200),
-    width: scale(200),
-  },
   inputContainer: {
     marginHorizontal: scale(15),
+    zIndex: 10, // 👈 important for dropdown overlap
   },
   button: {
     marginTop: scale(10),
@@ -324,34 +290,12 @@ const styles = StyleSheet.create({
     color: COLORS.primaryColor,
     fontWeight: 'bold',
   },
-  picker: {
-    height: 50,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: COLORS.black,
-  },
-  error: {
-    color: 'red',
-    fontSize: 14,
-    marginTop: 5,
-  },
-  pickerContainer: {
-    borderWidth: 1,
+  dropdown: {
     borderColor: COLORS.grey,
-    borderRadius: 5,
     marginBottom: 10,
-    backgroundColor: COLORS.white,
   },
-  picker: {
-    height: 50,
-    width: '100%',
-    color: COLORS.black,
-  },
-  label: {
-    fontSize: moderateScale(14),
-    fontWeight: '500',
-    color: COLORS.black,
-    marginBottom: 5,
+  dropdownContainer: {
+    borderColor: COLORS.grey,
   },
   error: {
     color: 'red',

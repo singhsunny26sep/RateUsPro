@@ -5,7 +5,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 const HelpAndSupport = ({ navigation }) => {
-    const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
+    const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564~8207548068';
     
     return (
         <View style={styles.container}>

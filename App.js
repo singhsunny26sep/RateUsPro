@@ -13,7 +13,6 @@ export default function App() {
     try {
       const latestVersion = await VersionCheck.getLatestVersion(); // Play Store se
       const currentVersion = await VersionCheck.getCurrentVersion(); // app ke andar wali versionName
-
       if (latestVersion !== currentVersion) {
         Alert.alert(
           "Update Available",
