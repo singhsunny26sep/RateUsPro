@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Alert, StatusBar } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -27,25 +27,78 @@ export default function SignUp({ navigation }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // 🔽 Business Type Dropdown states
-  const [open, setOpen] = useState(false);
+  // Business Type Dropdown states
+  const [openBusiness, setOpenBusiness] = useState(false);
   const [businessItems, setBusinessItems] = useState([]);
   const [businessType, setBusinessType] = useState(null);
 
-  const adUnitId = __DEV__
-    ? TestIds.BANNER
-    : 'ca-app-pub-8740472521955564~8207548068';
+  // State Dropdown states
+  const [openState, setOpenState] = useState(false);
+  const [stateValue, setStateValue] = useState(null);
+const [stateItems, setStateItems] = useState([
+  { label: 'Andhra Pradesh', value: 'andhra_pradesh' },
+  { label: 'Arunachal Pradesh', value: 'arunachal_pradesh' },
+  { label: 'Assam', value: 'assam' },
+  { label: 'Bihar', value: 'bihar' },
+  { label: 'Chhattisgarh', value: 'chhattisgarh' },
+  { label: 'Goa', value: 'goa' },
+  { label: 'Gujarat', value: 'gujarat' },
+  { label: 'Haryana', value: 'haryana' },
+  { label: 'Himachal Pradesh', value: 'himachal_pradesh' },
+  { label: 'Jharkhand', value: 'jharkhand' },
+  { label: 'Karnataka', value: 'karnataka' },
+  { label: 'Kerala', value: 'kerala' },
+  { label: 'Madhya Pradesh', value: 'madhya_pradesh' },
+  { label: 'Maharashtra', value: 'maharashtra' },
+  { label: 'Manipur', value: 'manipur' },
+  { label: 'Meghalaya', value: 'meghalaya' },
+  { label: 'Mizoram', value: 'mizoram' },
+  { label: 'Nagaland', value: 'nagaland' },
+  { label: 'Odisha', value: 'odisha' },
+  { label: 'Punjab', value: 'punjab' },
+  { label: 'Rajasthan', value: 'rajasthan' },
+  { label: 'Sikkim', value: 'sikkim' },
+  { label: 'Tamil Nadu', value: 'tamil_nadu' },
+  { label: 'Telangana', value: 'telangana' },
+  { label: 'Tripura', value: 'tripura' },
+  { label: 'Uttar Pradesh', value: 'uttar_pradesh' },
+  { label: 'Uttarakhand', value: 'uttarakhand' },
+  { label: 'West Bengal', value: 'west_bengal' },
+  { label: 'Andaman and Nicobar Islands', value: 'andaman_nicobar' },
+  { label: 'Chandigarh', value: 'chandigarh' },
+  { label: 'Dadra and Nagar Haveli and Daman and Diu', value: 'dadra_nagar_haveli_daman_diu' },
+  { label: 'Delhi (NCT)', value: 'delhi' },
+  { label: 'Jammu and Kashmir', value: 'jammu_kashmir' },
+  { label: 'Ladakh', value: 'ladakh' },
+  { label: 'Lakshadweep', value: 'lakshadweep' },
+  { label: 'Puducherry', value: 'puducherry' },
+]);
 
+
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564/8164501176';
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  // 🔽 Fetch Business Types from API
+  // Sync stateValue with formData
+  useEffect(() => {
+    if (stateValue) {
+      handleInputChange('state', stateValue);
+    }
+  }, [stateValue]);
+
+  // Sync businessType with formData
+  useEffect(() => {
+    if (businessType) {
+      handleInputChange('businessType', businessType);
+    }
+  }, [businessType]);
+
+  // Fetch Business Types from API
   const fetchData = async () => {
-    console.log()
     try {
       const response = await fetch(
-        'https://rateus-backend.onrender.com/v1/api/business',
+        'https://rateusbackend.onrender.com/v1/api/business',
       );
       const result = await response.json();
       const formatted = result?.result?.map(panel => ({
@@ -53,7 +106,6 @@ export default function SignUp({ navigation }) {
         value: panel._id,
       }));
       setBusinessItems(formatted);
-      console.log(businessItems,"this is bussinuess type")
     } catch (error) {
       console.error('Error fetching business data:', error);
     } finally {
@@ -95,7 +147,7 @@ export default function SignUp({ navigation }) {
           password: formData.password,
           role: 'vendor',
           businessName: formData.businessName,
-          businessType: businessType, // ✅ selected value
+          businessType: businessType,
           mobile: formData.ownerMobileNo,
           whatsappNumber: formData.whatsappNo,
           city: formData.city,
@@ -121,10 +173,12 @@ export default function SignUp({ navigation }) {
   };
 
   return (
+    <ScrollView>
     <Container
       statusBarStyle="dark-content"
       statusBarBackgroundColor={COLORS.white}
       backgroundColor={COLORS.white}>
+        <StatusBar/>
       <View>
         <Text style={styles.Headertxt}>SignUp</Text>
       </View>
@@ -140,12 +194,12 @@ export default function SignUp({ navigation }) {
         </View>
 
         <View style={styles.inputContainer}>
-          {/* 🔽 Business Type Dropdown */}
+          {/* Business Type Dropdown */}
           <DropDownPicker
-            open={open}
+            open={openBusiness}
             value={businessType}
             items={businessItems}
-            setOpen={setOpen}
+            setOpen={setOpenBusiness}
             setValue={setBusinessType}
             setItems={setBusinessItems}
             placeholder="Select Business Type"
@@ -197,29 +251,25 @@ export default function SignUp({ navigation }) {
             error={errors.city}
           />
 
-          {/* State Picker (Static for Now) */}
-          <View style={styles.pickerContainer}>
-            <DropDownPicker
-              open={formData.openState || false}
-              value={formData.state}
-              items={[
-                { label: 'Delhi (NCR)', value: 'delhi' },
-                { label: 'Maharashtra', value: 'maharashtra' },
-                { label: 'Uttar Pradesh', value: 'uttar_pradesh' },
-                { label: 'Bihar', value: 'bihar' },
-                { label: 'Punjab', value: 'punjab' },
-              ]}
-              setOpen={val => handleInputChange('openState', val)}
-              setValue={val => handleInputChange('state', val())}
-              setItems={() => {}}
-              placeholder="Select State"
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-            />
-          </View>
-          {errors.state ? (
+          {/* State Picker */}
+
+  <DropDownPicker
+    open={openState}
+    value={stateValue}
+    items={stateItems}
+    setOpen={setOpenState}
+    setValue={setStateValue}
+    setItems={setStateItems}
+    placeholder="Select State"
+   style={styles.dropdown}
+            dropDownContainerStyle={styles.dropdownContainer}
+  />
+
+
+
+          {errors.state && (
             <Text style={styles.error}>{errors.state}</Text>
-          ) : null}
+          )}
 
           <CustomTextInput
             placeholder="Password"
@@ -256,6 +306,7 @@ export default function SignUp({ navigation }) {
         </View>
       </ScrollView>
     </Container>
+    </ScrollView>
   );
 }
 
@@ -265,7 +316,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginHorizontal: scale(15),
-    zIndex: 10, // 👈 important for dropdown overlap
+    zIndex: 1000, // Increased zIndex to handle dropdown overlap
+  },
+  pickerContainer: {
+    zIndex: 900, // Lower than inputContainer but still high
   },
   button: {
     marginTop: scale(10),
@@ -301,5 +355,9 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 14,
     marginBottom: 10,
+  },
+  bannerContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
   },
 });

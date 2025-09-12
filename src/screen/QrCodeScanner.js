@@ -8,7 +8,7 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 export default function CameraScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(false);
-const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564/8164501176';
 
   useEffect(() => {
     checkCameraPermission();

@@ -13,7 +13,7 @@ import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3940256099942544~1458002511';
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564/8164501176';
 
   const handleSendOTP = async () => {
     if (!email) {

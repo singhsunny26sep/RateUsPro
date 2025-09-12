@@ -32,7 +32,7 @@ export default function Login({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   // 🔹 Test ID (Production me apna adUnitId daalo)
-  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8740472521955564~8207548068';
+  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8740472521955564/3334542404';
 
   // 🔹 Interstitial Ad create
   const interstitial = InterstitialAd.createForAdRequest(adUnitId, {

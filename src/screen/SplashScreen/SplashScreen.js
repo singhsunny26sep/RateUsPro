@@ -9,7 +9,7 @@ import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 export default function SplashScreen({ navigation }) {
   const imageAnim = useRef(new Animated.Value(-200)).current;
   const textAnim = useRef(new Animated.Value(200)).current;
-  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564~8207548068';
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564/8164501176';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -76,6 +76,7 @@ export default function SplashScreen({ navigation }) {
     </Container>
   );
 }
+
 
 const styles = StyleSheet.create({
   imageContainer: {
