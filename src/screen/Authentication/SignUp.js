@@ -192,7 +192,6 @@ const [stateItems, setStateItems] = useState([
             style={styles.Img}
           />
         </View>
-
         <View style={styles.inputContainer}>
           {/* Business Type Dropdown */}
           <DropDownPicker
@@ -209,7 +208,6 @@ const [stateItems, setStateItems] = useState([
           {errors.businessType && (
             <Text style={styles.error}>{errors.businessType}</Text>
           )}
-
           <CustomTextInput
             placeholder="Name of business"
             leftIcon="business"

@@ -5,7 +5,6 @@ import { RNCamera } from 'react-native-camera';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-
 export default function CameraScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(false);
   const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8740472521955564/8164501176';
@@ -13,7 +12,6 @@ export default function CameraScreen({ navigation }) {
   useEffect(() => {
     checkCameraPermission();
   }, []);
-
   const checkCameraPermission = async () => {
     const permission =
       Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
@@ -51,13 +49,13 @@ export default function CameraScreen({ navigation }) {
       >
         <Text style={{ color: 'white', fontSize: 16 }}>Close Camera</Text>
       </TouchableOpacity>
-            <View style={styles.bannerContainer}>
-                      <BannerAd
-                        unitId={adUnitId}
-                        size={BannerAdSize.FULL_BANNER}
-                        requestOptions={{ requestNonPersonalizedAdsOnly: true }}
-                      />
-                    </View>
+      <View style={styles.bannerContainer}>
+        <BannerAd
+          unitId={adUnitId}
+          size={BannerAdSize.FULL_BANNER}
+          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+        />
+      </View>
     </View>
   );
 }

@@ -147,7 +147,7 @@ const shareQRCode = async () => {
           <>
             <View ref={qrRef} style={styles.qrContainer}>
               <QRCode
-                value={`https://rateus-backend.onrender.com/review/${profileData}`}
+                value={`https://rateusbackend.onrender.com/review/${profileData}`}
                 size={250}
                 color="black"
                 logoSize={50}
